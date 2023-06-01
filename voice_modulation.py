@@ -47,10 +47,10 @@ class AudioHandler(object):
         pitch_shifted_audio = librosa.effects.pitch_shift(numpy_array, self.RATE, n_steps=-4)
 
         # Apply a low-pass filter to attenuate high frequencies
-        #filtered_audio = librosa.effects.preemphasis(pitch_shifted_audio)
+        filtered_audio = librosa.effects.preemphasis(pitch_shifted_audio)
 
         # Convert the modified audio data back to bytes
-        out_data = pitch_shifted_audio.astype(np.float32).tobytes()
+        out_data = filtered_audio.astype(np.float32).tobytes()
 
         # Play back the modified audio
         self.output_stream.write(out_data)
