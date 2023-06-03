@@ -42,13 +42,13 @@ class AudioHandler(object):
         '''Process the input audio data and play back the modified audio.'''
         # Convert the input audio data to a numpy array
         numpy_array = np.frombuffer(in_data, dtype=np.float32)
-
+        
         # Apply pitch shifting to create a robotic voice effect
-        pitch_shifted_audio = librosa.effects.pitch_shift(numpy_array, self.RATE, n_steps=-4)
-
+        pitch_shifted_audio = librosa.effects.pitch_shift(y=numpy_array, sr=self.RATE, n_steps=4)
+        
         # Apply a low-pass filter to attenuate high frequencies
-        filtered_audio = librosa.effects.preemphasis(pitch_shifted_audio)
-
+        filtered_audio = librosa.effects.preemphasis(pitch_shifted_audio, coef=0.95)
+        
         # Convert the modified audio data back to bytes
         out_data = filtered_audio.astype(np.float32).tobytes()
 
