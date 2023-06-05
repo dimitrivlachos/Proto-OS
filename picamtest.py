@@ -1,19 +1,22 @@
-from picamera2.array import PiRGBArray
-from picamera2 import PiCamera2
-import time
 import cv2
+from picamera2 import Picamera2
 
-# initialize the camera and grab a reference to the raw camera capture
-camera = PiCamera2()
-rawCapture = PiRGBArray(camera)
+# Grab images as numpy arrays and leave everything else to OpenCV.
 
-# allow the camera to warmup
-time.sleep(0.1)
+face_detector = cv2.CascadeClassifier("/usr/share/opencv4/haarcascades/haarcascade_frontalface_default.xml")
+cv2.startWindowThread()
 
-# grab an image from the camera
-camera.capture(rawCapture, format="bgr")
-image = rawCapture.array
+picam2 = Picamera2()
+picam2.configure(picam2.create_preview_configuration(main={"format": 'XRGB8888', "size": (640, 480)}))
+picam2.start()
 
-# display the image on screen and wait for a keypress
-cv2.imshow("Image", image)
-cv2.waitKey(0)
+while True:
+    im = picam2.capture_array()
+
+    grey = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
+    faces = face_detector.detectMultiScale(grey, 1.1, 5)
+
+    for (x, y, w, h) in faces:
+        cv2.rectangle(im, (x, y), (x + w, y + h), (0, 255, 0))
+
+    cv2.imshow("Camera", im)
