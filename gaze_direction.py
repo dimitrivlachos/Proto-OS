@@ -10,10 +10,12 @@ detector_params.filterByArea = True
 detector_params.maxArea = 1500
 detector = cv2.SimpleBlobDetector_create(detector_params)
 
+threshold = 50
+
 def main():
     cap = cv2.VideoCapture(0)
-    cv2.namedWindow('image')
-    cv2.createTrackbar('threshold', 'image', 0, 255, lambda x: None)
+    #cv2.namedWindow('image')
+    #cv2.createTrackbar('threshold', 'image', 0, 255, lambda x: None)
 
     while True:
         _, frame = cap.read()
@@ -22,18 +24,20 @@ def main():
             eyes = detect_eyes(face_frame, eye_cascade)
             for eye in eyes:
                 if eye is not None:
-                    threshold = cv2.getTrackbarPos('threshold', 'image')
+                    #threshold = cv2.getTrackbarPos('threshold', 'image')
                     eye = cut_eyebrows(eye)
                     iris_center = detect_iris_center(eye, threshold, detector)
                     if iris_center is not None:
                         gaze_direction = calculate_gaze_direction(eye, iris_center)
-                        eye_with_markers = draw_markers(eye, iris_center, gaze_direction)
-                        cv2.imshow('eye_with_markers', eye_with_markers)
-        cv2.imshow('frame', frame)
+                        print(gaze_direction)
+                        #save_to_csv(gaze_direction)
+                        #eye_with_markers = draw_markers(eye, iris_center, gaze_direction)
+                        #cv2.imshow('eye_with_markers', eye_with_markers)
+        #cv2.imshow('frame', frame)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
     cap.release()
-    cv2.destroyAllWindows()
+    #cv2.destroyAllWindows()
 
 def detect_faces(img, classifier):
     gray_frame = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -116,6 +120,10 @@ def draw_markers(eye, iris_center, gaze_direction):
     cv2.line(eye_with_markers, (int(eye_width / 2), int(eye_height / 2)), (gaze_end_x, gaze_end_y), marker_color, 2)
 
     return eye_with_markers
+
+def save_to_csv(gaze_direction):
+    with open('gaze_direction.csv', 'a') as f:
+        f.write('{},{}\n'.format(gaze_direction[0], gaze_direction[1]))
 
 if __name__ == '__main__':
     main()
