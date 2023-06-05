@@ -29,7 +29,7 @@ def main():
             eyes = detect_eyes(face_frame, eye_cascade)
             for eye in eyes:
                 if eye is not None:
-                    #threshold = cv2.getTrackbarPos('threshold', 'image')
+                    threshold = cv2.getTrackbarPos('threshold', 'image')
                     eye = cut_eyebrows(eye)
                     iris_center = detect_iris_center(eye, threshold, detector)
                     if iris_center is not None:
