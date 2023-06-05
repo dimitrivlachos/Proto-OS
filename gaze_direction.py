@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+from picamera2 import Picamera2
 
 face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
 eye_cascade = cv2.CascadeClassifier('haarcascade_eye.xml')
@@ -10,12 +11,16 @@ detector_params.filterByArea = True
 detector_params.maxArea = 1500
 detector = cv2.SimpleBlobDetector_create(detector_params)
 
-threshold = 50
+picam2 = Picamera2()
+picam2.configure(picam2.create_preview_configuration(main={"format": 'XRGB8888', "size": (640, 480)}))
+picam2.start()
+
+#threshold = 50
 
 def main():
-    cap = cv2.VideoCapture(0)
-    #cv2.namedWindow('image')
-    #cv2.createTrackbar('threshold', 'image', 0, 255, lambda x: None)
+    cap = picam2.capture_array()
+    cv2.namedWindow('image')
+    cv2.createTrackbar('threshold', 'image', 0, 255, lambda x: None)
 
     while True:
         _, frame = cap.read()
@@ -31,13 +36,13 @@ def main():
                         gaze_direction = calculate_gaze_direction(eye, iris_center)
                         print(gaze_direction)
                         #save_to_csv(gaze_direction)
-                        #eye_with_markers = draw_markers(eye, iris_center, gaze_direction)
-                        #cv2.imshow('eye_with_markers', eye_with_markers)
-        #cv2.imshow('frame', frame)
+                        eye_with_markers = draw_markers(eye, iris_center, gaze_direction)
+                        cv2.imshow('eye_with_markers', eye_with_markers)
+        cv2.imshow('frame', frame)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
     cap.release()
-    #cv2.destroyAllWindows()
+    cv2.destroyAllWindows()
 
 def detect_faces(img, classifier):
     gray_frame = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
