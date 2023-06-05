@@ -23,7 +23,7 @@ def main():
     cv2.createTrackbar('threshold', 'image', 0, 255, lambda x: None)
 
     while True:
-        _, frame = cap.read()
+        frame = cap.read()
         face_frame = detect_faces(frame, face_cascade)
         if face_frame is not None:
             eyes = detect_eyes(face_frame, eye_cascade)
