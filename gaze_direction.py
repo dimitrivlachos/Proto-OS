@@ -23,7 +23,7 @@ def main():
     cv2.createTrackbar('threshold', 'image', 0, 255, lambda x: None)
 
     while True:
-        frame = cap.read()
+        frame = cap
         face_frame = detect_faces(frame, face_cascade)
         if face_frame is not None:
             eyes = detect_eyes(face_frame, eye_cascade)
@@ -39,10 +39,6 @@ def main():
                         eye_with_markers = draw_markers(eye, iris_center, gaze_direction)
                         cv2.imshow('eye_with_markers', eye_with_markers)
         cv2.imshow('frame', frame)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
-    cap.release()
-    cv2.destroyAllWindows()
 
 def detect_faces(img, classifier):
     gray_frame = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
