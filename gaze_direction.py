@@ -39,7 +39,7 @@ def main():
                         #save_to_csv(gaze_direction)
                         eye_with_markers = draw_markers(eye, iris_center, gaze_direction)
                         cv2.imshow('eye_with_markers', eye_with_markers)
-        cv2.imshow('frame', frame)
+        cv2.imshow('frame', img)
 
 def detect_faces(img, classifier, gray_frame = None):
     if gray_frame is None:
