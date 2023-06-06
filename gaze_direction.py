@@ -15,11 +15,10 @@ picam2 = Picamera2()
 picam2.configure(picam2.create_preview_configuration(main={"format": 'XRGB8888', "size": (640, 480)}))
 picam2.start()
 
-#threshold = 50
+threshold = 50
 
 def main():
-    cv2.namedWindow('image')
-    cv2.createTrackbar('threshold', 'image', 0, 255, lambda x: None)
+    cv2.startWindowThread()
 
     while True:
         img = picam2.capture_array()
@@ -30,7 +29,7 @@ def main():
             eyes = detect_eyes(face_frame, eye_cascade)
             for eye in eyes:
                 if eye is not None:
-                    threshold = cv2.getTrackbarPos('threshold', 'image')
+                    #threshold = cv2.getTrackbarPos('threshold', 'image')
                     eye = cut_eyebrows(eye)
                     iris_center = detect_iris_center(eye, threshold, detector)
                     if iris_center is not None:
