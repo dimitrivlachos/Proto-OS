@@ -18,13 +18,14 @@ picam2.start()
 #threshold = 50
 
 def main():
-    cap = picam2.capture_array()
     cv2.namedWindow('image')
     cv2.createTrackbar('threshold', 'image', 0, 255, lambda x: None)
 
     while True:
-        frame = cap
-        face_frame = detect_faces(frame, face_cascade)
+        img = picam2.capture_array()
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+        face_frame = detect_faces(img, face_cascade, gray_frame=gray)
         if face_frame is not None:
             eyes = detect_eyes(face_frame, eye_cascade)
             for eye in eyes:
@@ -40,8 +41,9 @@ def main():
                         cv2.imshow('eye_with_markers', eye_with_markers)
         cv2.imshow('frame', frame)
 
-def detect_faces(img, classifier):
-    gray_frame = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+def detect_faces(img, classifier, gray_frame = None):
+    if gray_frame is None:
+        gray_frame = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     coords = classifier.detectMultiScale(gray_frame, 1.3, 5)
     if len(coords) > 1:
         biggest = (0, 0, 0, 0)
@@ -57,8 +59,9 @@ def detect_faces(img, classifier):
         frame = img[y:y+h, x:x+w]
     return frame
 
-def detect_eyes(img, classifier):
-    gray_frame = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+def detect_eyes(img, classifier, gray_frame = None):
+    if gray_frame is None:
+        gray_frame = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     eyes = classifier.detectMultiScale(gray_frame, 1.3, 5)
     width = np.size(img, 1)
     height = np.size(img, 0)
