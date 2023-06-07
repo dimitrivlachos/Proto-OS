@@ -1,72 +1,57 @@
 import numpy as np
-import pyaudio
-import librosa
+import sounddevice as sd
 
 class AudioHandler(object):
     def __init__(self):
         '''Initialize audio stream parameters.'''
-        self.FORMAT = pyaudio.paFloat32
-        self.CHANNELS = 1
-        self.RATE = 44100
-        self.CHUNK = 1024 * 2
-        self.p = None
-        self.input_stream = None
-        self.output_stream = None
+        self.samplerate = 44100
+        self.blocksize = 1024 * 2
+        self.pitch_shift_steps = 4
+        self.preemphasis_coef = 0.95
 
-    def start(self):
-        '''Start the input and output streams.'''
-        self.p = pyaudio.PyAudio()
-        self.input_stream = self.p.open(format=self.FORMAT,
-                                        channels=self.CHANNELS,
-                                        rate=self.RATE,
-                                        input=True,
-                                        output=False,
-                                        stream_callback=self.process_input,
-                                        frames_per_buffer=self.CHUNK)
-        self.output_stream = self.p.open(format=self.FORMAT,
-                                         channels=self.CHANNELS,
-                                         rate=self.RATE,
-                                         input=False,
-                                         output=True,
-                                         frames_per_buffer=self.CHUNK)
-
-    def stop(self):
-        '''Gracefully stop the audio streams.'''
-        self.input_stream.stop_stream()
-        self.input_stream.close()
-        self.output_stream.stop_stream()
-        self.output_stream.close()
-        self.p.terminate()
-
-    def process_input(self, in_data, frame_count, time_info, flag):
+    def process_input(self, indata, outdata, frames, time, status):
         '''Process the input audio data and play back the modified audio.'''
-        # Convert the input audio data to a numpy array
-        numpy_array = np.frombuffer(in_data, dtype=np.float32)
-        
-        # Apply pitch shifting to create a robotic voice effect
-        pitch_shifted_audio = librosa.effects.pitch_shift(y=numpy_array, sr=self.RATE, n_steps=4)
-        
-        # Apply a low-pass filter to attenuate high frequencies
-        filtered_audio = librosa.effects.preemphasis(pitch_shifted_audio, coef=0.95)
-        
-        # Convert the modified audio data back to bytes
-        out_data = filtered_audio.astype(np.float32).tobytes()
+        try:
+            # Apply pitch shifting to create a robotic voice effect
+            pitch_shifted_audio = self.pitch_shift(indata, self.pitch_shift_steps)
+            
+            # Apply a low-pass filter to attenuate high frequencies
+            filtered_audio = self.preemphasis_filter(pitch_shifted_audio, self.preemphasis_coef)
 
-        # Play back the modified audio
-        self.output_stream.write(out_data)
+            # Reshape filtered_audio to match the shape of outdata
+            reshaped_audio = filtered_audio.reshape(outdata.shape)
+            
+            # Play back the modified audio
+            outdata[:] = reshaped_audio
+        except Exception as e:
+            print(str(e))
+            outdata.fill(0)
+        
 
-        return None, pyaudio.paContinue
+    def pitch_shift(self, audio, n_steps):
+        '''Apply pitch shifting to the audio.'''
+        return np.roll(audio, n_steps)
+
+    def preemphasis_filter(self, audio, coef):
+        '''Apply a preemphasis filter to the audio.'''
+        return np.append(audio[0], audio[1:] - coef * audio[:-1])
 
     def run(self):
-        '''Start the audio streams and run indefinitely.'''
-        self.start()
+        '''Start the audio stream and run indefinitely.'''
+        stream = sd.Stream(callback=self.process_input,
+                           channels=1,
+                           samplerate=self.samplerate,
+                           blocksize=self.blocksize)
+        stream.start()
+
         try:
             while True:
                 pass
         except KeyboardInterrupt:
             pass
-        self.stop()
+
+        stream.stop()
+        stream.close()
 
 audio = AudioHandler()
-audio.start()
 audio.run()
