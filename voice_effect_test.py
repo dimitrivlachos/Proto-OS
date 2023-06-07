@@ -11,10 +11,10 @@ def apply_pitch_shift(filename, semitones):
 
     # Apply pitch shift
     #y_shifted = librosa.effects.pitch_shift(y=y, sr=sr, n_steps=semitones)
-    y_shifted = pitch_shift(y, sr, semitones)
+    y_shifted = pitch_shift(y_shifted, sr, semitones)
 
     #Apply preemphasis filter
-    #y_shifted = librosa.effects.preemphasis(y=y, coef=0.97)
+    y_shifted = librosa.effects.preemphasis(y=y_shifted, coef=0.97)
 
     # Play the shifted audio using sounddevice
     sd.play(y_shifted, sr)
@@ -37,20 +37,20 @@ def pitch_shift(sig, sample_rate, shift_factor):
     # Calculate the number of samples to shift
     shift_samples = int(len(sig) * shift_factor)
 
-    # Use the resample function from scipy to apply pitch shift
-    shifted_signal = signal.resample(sig, len(sig) + shift_samples)
+    # Create the time axis for the input signal
+    t = np.arange(len(sig)) / sample_rate
 
-    # Trim or pad the shifted signal to match the original length
-    if shift_samples > 0:
-        shifted_signal = shifted_signal[:-shift_samples]
-    elif shift_samples < 0:
-        shifted_signal = np.pad(shifted_signal, (0, -shift_samples), 'constant')
+    # Calculate the phase shift for the pitch shift
+    phase_shift = 2 * np.pi * shift_samples * t
+
+    # Apply phase shift to the signal
+    shifted_signal = sig * np.cos(phase_shift)
 
     return shifted_signal
 
 # Example usage
 if __name__ == '__main__':
     filename = 'output.wav'
-    semitones = -1  # Adjust this value to change the pitch shift amount
+    semitones = 4 # Adjust this value to change the pitch shift amount
 
     apply_pitch_shift(filename, semitones)

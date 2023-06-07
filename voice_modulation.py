@@ -1,25 +1,29 @@
 import numpy as np
 import sounddevice as sd
+import pyrubberband
+import librosa
 
 class AudioHandler(object):
     def __init__(self):
         '''Initialize audio stream parameters.'''
         self.samplerate = 44100
         self.blocksize = 1024 * 2
-        self.pitch_shift_steps = 4
+        self.pitch_shift_steps = 2
         self.preemphasis_coef = 0.95
 
     def process_input(self, indata, outdata, frames, time, status):
         '''Process the input audio data and play back the modified audio.'''
+        print('indata shape: {}'.format(indata.shape))
         try:
             # Apply pitch shifting to create a robotic voice effect
-            pitch_shifted_audio = self.pitch_shift(indata, self.pitch_shift_steps)
+            #pitch_shifted_audio = self.pitch_shift(indata, self.pitch_shift_steps)
+            pitch_shifted_audio = librosa.effects.pitch_shift(y=indata, sr=self.samplerate, n_steps=self.pitch_shift_steps)
             
             # Apply a low-pass filter to attenuate high frequencies
-            filtered_audio = self.preemphasis_filter(pitch_shifted_audio, self.preemphasis_coef)
+            #filtered_audio = self.preemphasis_filter(pitch_shifted_audio, self.preemphasis_coef)
 
             # Reshape filtered_audio to match the shape of outdata
-            reshaped_audio = filtered_audio.reshape(outdata.shape)
+            reshaped_audio = pitch_shifted_audio.reshape(outdata.shape)
             
             # Play back the modified audio
             outdata[:] = reshaped_audio
