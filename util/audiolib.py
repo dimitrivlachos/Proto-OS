@@ -15,7 +15,7 @@ class AudioLib:
         blocks = np.reshape(audio[:num_blocks * self.blocksize], (num_blocks, self.blocksize))
 
         # Apply the windowing function to each block
-        windowed_blocks = blocks * self.window
+        windowed_blocks = blocks * self.window[np.newaxis, :]
 
         # Compute the Fourier transform of each block
         spectrum = np.fft.fft(windowed_blocks, axis=1)
