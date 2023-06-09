@@ -39,8 +39,8 @@ while True:
             sys.exit()
 
     # Get the joystick axes
-    x_axis = (joystick.get_axis(0) + 1) / 2
-    y_axis = (joystick.get_axis(1) + 1) / 2
+    x_axis = (joystick.get_axis(0) + 1)
+    y_axis = (joystick.get_axis(1) + 1)
 
     print("x_axis: " + str(x_axis))
     print("y_axis: " + str(y_axis))
