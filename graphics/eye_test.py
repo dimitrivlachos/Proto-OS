@@ -31,17 +31,8 @@ while True:
             sys.exit()
 
     # Get the joystick axes
-    x_axis = joystick.get_axis(0)
-    y_axis = joystick.get_axis(1)
-
-    # Get the joystick buttons
-    a_button = joystick.get_button(0)
-    b_button = joystick.get_button(1)
-    x_button = joystick.get_button(2)
-    y_button = joystick.get_button(3)
-
-    # Get the joystick hat
-    hat = joystick.get_hat(0)
+    x_axis = round(joystick.get_axis(0), 2)
+    y_axis = round(joystick.get_axis(1), 2)
 
     print("x_axis: " + str(x_axis))
     print("y_axis: " + str(y_axis))
@@ -58,10 +49,10 @@ while True:
     y_actual = []
 
     x_actual.append(x*2)
-    x_actual.append(x*2-1)
+    x_actual.append(x*2+1)
 
     y_actual.append(y*2)
-    y_actual.append(y*2-1)
+    y_actual.append(y*2+1)
 
     for x in x_actual:
         for y in y_actual:
