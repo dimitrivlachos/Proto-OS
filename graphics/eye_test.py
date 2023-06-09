@@ -58,10 +58,10 @@ while True:
     y_actual = []
 
     x_actual.append(x*2)
-    x_actual.append(x*2+1)
+    x_actual.append(x*2-1)
 
     y_actual.append(y*2)
-    y_actual.append(y*2+1)
+    y_actual.append(y*2-1)
 
     for x in x_actual:
         for y in y_actual:
