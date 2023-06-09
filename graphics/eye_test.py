@@ -57,6 +57,9 @@ while True:
     y_actual.append(y)
     y_actual.append(y - 1)
 
+    print("x: " + str(x_actual))
+    print("y: " + str(y_actual))
+
     # Clear the unicorn hat
     unicornhathd.clear()
 
