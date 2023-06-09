@@ -43,6 +43,9 @@ while True:
     # Get the joystick hat
     hat = joystick.get_hat(0)
 
+    print("x_axis: " + str(x_axis))
+    print("y_axis: " + str(y_axis))
+
     # Map the joystick axes to a dot position with 0 being the center
     x = int((x_axis + 1) * 4)
     y = int((y_axis + 1) * 4)
