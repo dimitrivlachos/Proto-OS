@@ -9,7 +9,7 @@ def apply_pitch_shift(filename, semitones):
 
     y_shifted = y
 
-    audio_lib = AudioLib(blocksize=300 * 2)
+    audio_lib = AudioLib(blocksize=1024 * 2)
 
     # Apply pitch shift
     y_shifted = audio_lib.pitch_shift(y_shifted, semitones)
