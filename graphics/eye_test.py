@@ -65,6 +65,8 @@ while True:
 
     for x in x_actual:
         for y in y_actual:
+            print("x: " + str(x))
+            print("y: " + str(y))
             unicornhathd.set_pixel(x, y, r, g, b)
 
     # Show the dot
