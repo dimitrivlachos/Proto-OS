@@ -56,14 +56,16 @@ while True:
     hat = joystick.get_hat(0)
 
     # Map the joystick axes to a dot position with 0 being the center
-    x = int((x_axis + 1) * 8)
-    y = int((y_axis + 1) * 8)
+    x = int((x_axis + 1) * 7)
+    y = int((y_axis + 1) * 7)
 
     # Clear the unicorn hat
     unicornhathd.clear()
 
-    # Set the dot color
-    unicornhathd.set_pixel(x, y, r, g, b)
+    # Draw the dot on the updated position
+    for x in range(x, x + 2):
+        for y in range(y, y + 2):
+            unicornhathd.set_pixel(x, y, 255, 255, 255)  # White color
 
     # Show the dot
     unicornhathd.show()
