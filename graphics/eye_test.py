@@ -1,5 +1,3 @@
-'''Control a 4x4 dot on a 16x16 pimoroni unicorn hd hat using a xbox 360 joystick'''\
-# Path: graphics\unicorn_test.py
 import unicornhathd
 import pygame
 import time
@@ -17,20 +15,10 @@ joystick.init()
 unicornhathd.rotation(0)
 unicornhathd.brightness(0.5)
 
-# Initialize the dot position
-x = 0
-y = 0
-
 # Initialize the dot color
 r = 255
 g = 255
 b = 255
-
-# Initialize the dot speed
-speed = 1
-
-# Initialize the dot size
-size = 1
 
 # Main loop
 while True:
@@ -66,11 +54,11 @@ while True:
     x_actual = []
     y_actual = []
 
-    x_actual.append(x*2-1)
     x_actual.append(x*2)
+    x_actual.append(x*2+1)
 
-    y_actual.append(y*2-1)
     y_actual.append(y*2)
+    y_actual.append(y*2+1)
 
     for x in x_actual:
         for y in y_actual:
