@@ -60,9 +60,6 @@ while True:
     print("x: " + str(x_actual))
     print("y: " + str(y_actual))
 
-    # Clear the unicorn hat
-    unicornhathd.clear()
-
     # Set the dots color
     for x in range(0, 16):
         for y in range(0, 16):
