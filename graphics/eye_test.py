@@ -39,23 +39,23 @@ while True:
             sys.exit()
 
     # Get the joystick axes
-    x_axis = (joystick.get_axis(0) + 1)
-    y_axis = (joystick.get_axis(1) + 1)
+    x_axis = round(joystick.get_axis(0), 2)
+    y_axis = round(joystick.get_axis(1), 2)
 
     print("x_axis: " + str(x_axis))
     print("y_axis: " + str(y_axis))
 
     # Map the joystick axes to a dot position with 0 being the center
-    x = int(x_axis * 8)
-    y = int(y_axis * 8)
+    x = int(constrain((x_axis + 1) * 8, 0, 14))
+    y = int(constrain((y_axis + 1) * 8, 0, 14))
 
     x_actual = []
     y_actual = []
 
     x_actual.append(x)
-    x_actual.append(constrain(x + 1, 0, 15))
+    x_actual.append(x + 1)
     y_actual.append(y)
-    y_actual.append(constrain(y + 1, 0, 15))
+    y_actual.append(y + 1)
 
     # Clear the unicorn hat
     unicornhathd.clear()
