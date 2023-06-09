@@ -120,7 +120,9 @@ if __name__ == '__main__':
     audio = np.sin(np.linspace(0, 2 * np.pi * 440, 44100 * 2))
 
     # Create the audio library
-    audio_lib = AudioLib()
+    audio_lib = AudioLib(blocksize=8 * 2)
+
+    stft = audio_lib.istft(audio_lib.stft(audio))
 
     # Compute the short-time Fourier transform of the audio
     spectrum = audio_lib.stft(audio)
@@ -139,16 +141,23 @@ if __name__ == '__main__':
     plt.subplot(5, 1, 1)
     plt.plot(audio)
     plt.title('Original audio')
+
     plt.subplot(5, 1, 2)
-    plt.plot(stretched_audio)
-    plt.title('Time stretched audio')
+    #plt.plot(stretched_audio)
+    #plt.title('Time stretched audio')
+    plt.plot(stft)
+    plt.title('STFT-ISTFT')
+
     plt.subplot(5, 1, 3)
     plt.plot(resampled_audio)
     plt.title('Resampled audio')
+
     plt.subplot(5, 1, 4)
     plt.plot(pitch_shifted_audio)
     plt.title('Pitch shifted audio')
+
     plt.subplot(5, 1, 5)
     plt.imshow(np.abs(spectrum).T, aspect='auto', origin='lower')
     plt.title('Spectrum')
+
     plt.show()
