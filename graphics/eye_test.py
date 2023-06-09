@@ -20,6 +20,14 @@ r = 255
 g = 255
 b = 255
 
+def constrain(value, min, max):
+    if value < min:
+        return min
+    elif value > max:
+        return max
+    else:
+        return value
+
 # Main loop
 while True:
     # Get the events
@@ -49,10 +57,10 @@ while True:
     y_actual = []
 
     x_actual.append(x*2)
-    x_actual.append(x*2+1)
+    x_actual.append(constrain(x*2+1, 0, 15))
 
     y_actual.append(y*2)
-    y_actual.append(y*2+1)
+    y_actual.append(constrain(y*2+1, 0, 15))
 
     for x in x_actual:
         for y in y_actual:
