@@ -9,8 +9,10 @@ def apply_pitch_shift(filename, semitones):
 
     y_shifted = y
 
+    audio_lib = AudioLib(blocksize=300 * 2)
+
     # Apply pitch shift
-    y_shifted = AudioLib().pitch_shift(y_shifted, semitones)
+    y_shifted = audio_lib.pitch_shift(y_shifted, semitones)
     #y_shifted = librosa.effects.pitch_shift(y=y, sr=sr, n_steps=semitones)
     #y_shifted = pitch_shift(y_shifted, sr, semitones)
 
@@ -23,7 +25,7 @@ def apply_pitch_shift(filename, semitones):
 
 # Example usage
 if __name__ == '__main__':
-    filename = 'output.wav'
+    filename = 'util/output.wav'
     semitones = 2 # Adjust this value to change the pitch shift amount
 
     apply_pitch_shift(filename, semitones)
