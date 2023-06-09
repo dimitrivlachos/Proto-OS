@@ -24,6 +24,6 @@ def apply_pitch_shift(filename, semitones):
 # Example usage
 if __name__ == '__main__':
     filename = 'output.wav'
-    semitones = 1 # Adjust this value to change the pitch shift amount
+    semitones = 2 # Adjust this value to change the pitch shift amount
 
     apply_pitch_shift(filename, semitones)

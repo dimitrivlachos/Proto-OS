@@ -2,7 +2,7 @@ import numpy as np
 import sounddevice as sd
 import pyrubberband
 import librosa
-import threading
+from util.audiolib import AudioLib
 
 class AudioHandler(object):
     def __init__(self):
@@ -11,8 +11,6 @@ class AudioHandler(object):
         self.blocksize = 1024 * 2
         self.pitch_shift_steps = 2
         self.preemphasis_coef = 0.95
-        self.stream = None
-        self.event = None
 
     def process_input(self, indata, outdata, frames, time, status):
         '''Process the input audio data and play back the modified audio.'''
@@ -20,7 +18,9 @@ class AudioHandler(object):
         try:
             # Apply pitch shifting to create a robotic voice effect
             #pitch_shifted_audio = self.pitch_shift(indata, self.pitch_shift_steps)
-            pitch_shifted_audio = librosa.effects.pitch_shift(y=indata, sr=self.samplerate, n_steps=self.pitch_shift_steps)
+            #pitch_shifted_audio = librosa.effects.pitch_shift(y=indata, sr=self.samplerate, n_steps=self.pitch_shift_steps)
+            #pitch_shifted_audio = pyrubberband.pitch_shift(indata, self.samplerate, self.pitch_shift_steps)
+            pitch_shifted_audio = AudioLib().pitch_shift(indata, self.pitch_shift_steps)
             
             # Apply a low-pass filter to attenuate high frequencies
             #filtered_audio = self.preemphasis_filter(pitch_shifted_audio, self.preemphasis_coef)
@@ -33,9 +33,7 @@ class AudioHandler(object):
         except Exception as e:
             print(str(e))
             outdata.fill(0)
-
-        if self.event.is_set():
-            raise sd.CallbackAbort
+        
 
     def pitch_shift(self, audio, n_steps):
         '''Apply pitch shifting to the audio.'''
@@ -47,34 +45,20 @@ class AudioHandler(object):
 
     def run(self):
         '''Start the audio stream and run indefinitely.'''
-        self.event = threading.Event()
-        self.stream = sd.InputStream(callback=self.process_input,
-                                     channels=1,
-                                     samplerate=self.samplerate,
-                                     blocksize=self.blocksize)
+        stream = sd.Stream(callback=self.process_input,
+                           channels=1,
+                           samplerate=self.samplerate,
+                           blocksize=self.blocksize)
+        stream.start()
 
-        with self.stream:
-            try:
-                while not self.event.is_set():
-                    pass
-            except KeyboardInterrupt:
+        try:
+            while True:
                 pass
+        except KeyboardInterrupt:
+            pass
 
-        self.stream.close()
-
-    def stop(self):
-        '''Stop the audio stream.'''
-        self.event.set()
+        stream.stop()
+        stream.close()
 
 audio = AudioHandler()
-
-# Start the audio stream in a separate thread
-audio_thread = threading.Thread(target=audio.run)
-audio_thread.start()
-
-# Wait for user input to stop the program
-input("Press Enter to stop the program...\n")
-
-# Stop the audio stream and join the thread
-audio.stop()
-audio_thread.join()
+audio.run()
