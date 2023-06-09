@@ -90,6 +90,7 @@ class AudioLib:
     def pitch_shift(self, audio, semitones, is_spectrum=False, out_spectrum=False):
         # Compute the short-time Fourier transform of the audio
         # If is_spectrum is True, assume that audio is already a spectrum
+        
         if is_spectrum:
             spectrum = audio
         else:
@@ -109,4 +110,45 @@ class AudioLib:
         else:
             output = self.istft(resampled_spectrum)
 
+        print("Returning:", output.shape, output)
         return output
+    
+if __name__ == '__main__':
+    # Test the audio library
+
+    # Create a fake sine wave audio signal
+    audio = np.sin(np.linspace(0, 2 * np.pi * 440, 44100 * 2))
+
+    # Create the audio library
+    audio_lib = AudioLib()
+
+    # Compute the short-time Fourier transform of the audio
+    spectrum = audio_lib.stft(audio)
+
+    # Apply time stretching to the audio
+    stretched_audio = audio_lib.time_stretch(audio, 2)
+
+    # Resample the audio
+    resampled_audio = audio_lib.resample(audio, 2)
+
+    # Pitch shift the audio
+    pitch_shifted_audio = audio_lib.pitch_shift(audio, 4)
+
+    # Plot the results
+    import matplotlib.pyplot as plt
+    plt.subplot(5, 1, 1)
+    plt.plot(audio)
+    plt.title('Original audio')
+    plt.subplot(5, 1, 2)
+    plt.plot(stretched_audio)
+    plt.title('Time stretched audio')
+    plt.subplot(5, 1, 3)
+    plt.plot(resampled_audio)
+    plt.title('Resampled audio')
+    plt.subplot(5, 1, 4)
+    plt.plot(pitch_shifted_audio)
+    plt.title('Pitch shifted audio')
+    plt.subplot(5, 1, 5)
+    plt.imshow(np.abs(spectrum).T, aspect='auto', origin='lower')
+    plt.title('Spectrum')
+    plt.show()
