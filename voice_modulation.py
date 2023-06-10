@@ -1,6 +1,6 @@
 import numpy as np
 import sounddevice as sd
-import pyrubberband
+import rubberband
 import librosa
 from util.audiolib import AudioLib
 
@@ -19,8 +19,8 @@ class AudioHandler(object):
             # Apply pitch shifting to create a robotic voice effect
             #pitch_shifted_audio = self.pitch_shift(indata, self.pitch_shift_steps)
             #pitch_shifted_audio = librosa.effects.pitch_shift(y=indata, sr=self.samplerate, n_steps=self.pitch_shift_steps)
-            #pitch_shifted_audio = pyrubberband.pitch_shift(indata, self.samplerate, self.pitch_shift_steps)
-            pitch_shifted_audio = AudioLib().pitch_shift(indata, self.pitch_shift_steps)
+            pitch_shifted_audio = rubberband.pitch_shift(indata, self.samplerate, self.pitch_shift_steps)
+            #pitch_shifted_audio = AudioLib().pitch_shift(indata, self.pitch_shift_steps)
             
             # Apply a low-pass filter to attenuate high frequencies
             #filtered_audio = self.preemphasis_filter(pitch_shifted_audio, self.preemphasis_coef)
