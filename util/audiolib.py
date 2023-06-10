@@ -4,33 +4,44 @@ import numpy as np
 
 class AudioLib:
     '''Library of audio processing functions.'''
-    def __init__(self, blocksize=1024 * 2):
+    def __init__(self, blocksize=1024 * 2, hopsize=1024):
         self.blocksize = blocksize
+        self.hopsize = hopsize
         self.window = np.hanning(blocksize)
 
     def stft(self, audio):
         '''Compute the short-time Fourier transform of the audio.'''
+        # Calculate the number of blocks and the length of the padded audio
+        num_blocks = (len(audio) - self.blocksize) // self.hopsize + 1
+        padded_length = num_blocks * self.hopsize + self.blocksize
+
+        # Pad the audio to the calculated length
+        audio = np.pad(audio, (0, padded_length - len(audio)))
+
         # Split the audio into overlapping blocks
-        num_blocks = len(audio) // self.blocksize
-        blocks = np.reshape(audio[:num_blocks * self.blocksize], (num_blocks, self.blocksize))
+        blocks = np.lib.stride_tricks.sliding_window_view(audio, (self.blocksize,))
+        blocks = blocks[:num_blocks]
 
         # Apply the windowing function to each block
-        windowed_blocks = blocks * self.window[np.newaxis, :]
+        windowed_blocks = blocks * self.window
 
         # Compute the Fourier transform of each block
         spectrum = np.fft.fft(windowed_blocks, axis=1)
 
         return spectrum
-    
+
     def istft(self, spectrum):
         '''Compute the inverse short-time Fourier transform of the spectrum.'''
         # Compute the inverse Fourier transform of each block
         windowed_blocks = np.fft.ifft(spectrum, axis=1).real
 
+        # Initialize the output signal with zeros
+        output_length = (len(windowed_blocks) - 1) * self.hopsize + self.blocksize
+        output = np.zeros(output_length)
+
         # Apply overlap-and-add to reconstruct the output signal
-        output = np.zeros(len(spectrum) * self.blocksize)
         for i, block in enumerate(windowed_blocks):
-            output[i * self.blocksize : (i + 1) * self.blocksize] += block
+            output[i * self.hopsize : i * self.hopsize + self.blocksize] += block
 
         return output
     
@@ -110,7 +121,7 @@ class AudioLib:
         else:
             output = self.istft(resampled_spectrum)
 
-        print("Returning:", output.shape, output)
+        #print("Returning:", output.shape, output)
         return output
     
 if __name__ == '__main__':
@@ -120,7 +131,7 @@ if __name__ == '__main__':
     audio = np.sin(np.linspace(0, 2 * np.pi * 440, 44100 * 2))
 
     # Create the audio library
-    audio_lib = AudioLib(blocksize=8 * 2)
+    audio_lib = AudioLib(blocksize=1024 * 2)
 
     stft = audio_lib.istft(audio_lib.stft(audio))
 
