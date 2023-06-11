@@ -7,41 +7,55 @@ class AudioLib:
     def __init__(self, blocksize=1024 * 2, hopsize=1024):
         self.blocksize = blocksize
         self.hopsize = hopsize
-        self.window = np.hanning(blocksize)
+        self.window = np.hanning(blocksize + 1)[:blocksize]
 
-    def stft(self, audio):
+    def extract_blocks(self, audio: np.ndarray, blocksize: int) -> np.ndarray:
+        """Extracts blocks with 50% overlap."""
+        hop_step = blocksize // 2
+        blocks = []
+        offset = 0
+
+        while offset + blocksize <= len(audio):
+            blocks.append(audio[offset:(offset + blocksize)])
+            offset += hop_step
+
+        return np.column_stack(blocks)
+        
+    def overlap_add_blocks(self, blocks: np.ndarray) -> np.ndarray:
+        """Overlap-adds blocks with 50% overlap."""
+        blocksize, num_blocks = blocks.shape
+        hop_step = blocksize // 2
+        output = np.zeros(blocksize + (num_blocks - 1) * hop_step)
+        offset = 0
+
+        for i in range(num_blocks):
+            output[offset:(offset + blocksize)] += blocks[:, i]
+            offset += hop_step
+        
+        return output
+
+    def stft(self, audio: np.ndarray) -> np.ndarray:
         '''Compute the short-time Fourier transform of the audio.'''
-        # Calculate the number of blocks and the length of the padded audio
-        num_blocks = (len(audio) - self.blocksize) // self.hopsize + 1
-        padded_length = num_blocks * self.hopsize + self.blocksize
-
-        # Pad the audio to the calculated length
-        audio = np.pad(audio, (0, padded_length - len(audio)))
-
         # Split the audio into overlapping blocks
-        blocks = np.lib.stride_tricks.sliding_window_view(audio, (self.blocksize,))
-        blocks = blocks[:num_blocks]
+        print("audio shape: ", audio.shape)
+        print("audio type: ", type(audio))
+        blocks = self.extract_blocks(audio, self.blocksize)
 
-        # Apply the windowing function to each block
+        # Apply the window function to each block
         windowed_blocks = blocks * self.window
 
         # Compute the Fourier transform of each block
-        spectrum = np.fft.fft(windowed_blocks, axis=1)
+        spectrum = np.fft.fft(windowed_blocks, axis=0)
 
         return spectrum
-
-    def istft(self, spectrum):
+    
+    def istft(self, spectrum: np.ndarray) -> np.ndarray:
         '''Compute the inverse short-time Fourier transform of the spectrum.'''
         # Compute the inverse Fourier transform of each block
         windowed_blocks = np.fft.ifft(spectrum, axis=1).real
 
-        # Initialize the output signal with zeros
-        output_length = (len(windowed_blocks) - 1) * self.hopsize + self.blocksize
-        output = np.zeros(output_length)
-
         # Apply overlap-and-add to reconstruct the output signal
-        for i, block in enumerate(windowed_blocks):
-            output[i * self.hopsize : i * self.hopsize + self.blocksize] += block
+        output = self.overlap_add_blocks(windowed_blocks)
 
         return output
     
@@ -131,9 +145,11 @@ if __name__ == '__main__':
     audio = np.sin(np.linspace(0, 2 * np.pi * 440, 44100 * 2))
 
     # Create the audio library
-    audio_lib = AudioLib(blocksize=1024 * 2)
+    audio_lib = AudioLib()
 
-    stft = audio_lib.istft(audio_lib.stft(audio))
+    stft = audio_lib.stft(audio)
+
+    istft = audio_lib.istft(stft)
 
     # Compute the short-time Fourier transform of the audio
     spectrum = audio_lib.stft(audio)
