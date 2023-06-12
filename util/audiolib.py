@@ -42,7 +42,8 @@ class AudioLib:
         blocks = self.extract_blocks(audio, self.blocksize)
 
         # Apply the window function to each block
-        windowed_blocks = blocks * self.window
+        new_window = np.tile(self.window, (blocks.shape[1], 1)).T
+        windowed_blocks = blocks * new_window
 
         # Compute the Fourier transform of each block
         spectrum = np.fft.fft(windowed_blocks, axis=0)
@@ -155,13 +156,13 @@ if __name__ == '__main__':
     spectrum = audio_lib.stft(audio)
 
     # Apply time stretching to the audio
-    stretched_audio = audio_lib.time_stretch(audio, 2)
+    #stretched_audio = audio_lib.time_stretch(audio, 2)
 
     # Resample the audio
-    resampled_audio = audio_lib.resample(audio, 2)
+    #resampled_audio = audio_lib.resample(audio, 2)
 
     # Pitch shift the audio
-    pitch_shifted_audio = audio_lib.pitch_shift(audio, 4)
+    #pitch_shifted_audio = audio_lib.pitch_shift(audio, 4)
 
     # Plot the results
     import matplotlib.pyplot as plt
@@ -176,11 +177,11 @@ if __name__ == '__main__':
     plt.title('STFT-ISTFT')
 
     plt.subplot(5, 1, 3)
-    plt.plot(resampled_audio)
+    #plt.plot(resampled_audio)
     plt.title('Resampled audio')
 
     plt.subplot(5, 1, 4)
-    plt.plot(pitch_shifted_audio)
+    #plt.plot(pitch_shifted_audio)
     plt.title('Pitch shifted audio')
 
     plt.subplot(5, 1, 5)
