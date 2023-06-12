@@ -1,6 +1,9 @@
 # Test files to be ignored
 output.wav
 
+# Training data not to be uploaded
+data/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
