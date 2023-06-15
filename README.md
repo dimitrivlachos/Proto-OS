@@ -18,3 +18,6 @@ For example:
 Proto-OS uses a Raspberry Pi 4B with a camera module to track the user's eye position and facial expression. These are mounted inside the suit head, with the camera facing the user. The Raspberry Pi is connected to the camera via a long ribbon cable and runs a Python script that uses OpenCV to track the user's eye position and Tensorflow Lite to track their facial expression. The script then sends the eye position and facial expression data to two Raspberry Pi Zeros via serial communication.
 
 The Zeros then run my custom graphics library for the Pimoroni Unicorn HD Hat (An RGB LED Matrix) to display the eye position and facial expression on the character's face display.
+
+Here is matrix, which would account for a single eye:
+![Image of the Unicorn Hat HD](https://shop.pimoroni.com/cdn/shop/products/uhhd-1_768x768.jpg?)
