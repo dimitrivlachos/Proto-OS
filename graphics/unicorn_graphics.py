@@ -5,15 +5,6 @@ class Unicorn_Graphics():
     def __init__(self, rotation=0, brightness=0.5):
         unicornhathd.rotation(rotation)
         unicornhathd.brightness(brightness)
-
-    def draw_circle(self, pixels, center_x, center_y, radius, r, g, b):
-        '''Draws a circle on the 16x16 pixel array'''
-        for x in range(16):
-            for y in range(16):
-                if (x - center_x)**2 + (y - center_y)**2 <= radius**2:
-                    pixels[x][y] = (r, g, b)
-
-        return pixels
         
     def draw_line(self, pixels, x1, y1, x2, y2, r, g, b):
         '''Draws a line on the 16x16 pixel array'''
@@ -49,5 +40,48 @@ class Unicorn_Graphics():
         for x in range(c1[0], c3[0]):
             for y in range(c1[1], c3[1]):
                 pixels[x][y] = (r, g, b)
+
+        return pixels
+    
+class Circle():
+    '''Circle object for drawing on the Unicorn HAT HD'''
+    def __init__(self, center_x, center_y, radius, rgb=(255,255,255), pixels=None, filled=True, display_x=16, display_y=16):
+        # Center coordinates of the circle
+        self.center_x = center_x
+        self.center_y = center_y
+        self.radius = radius # Radius of the circle
+
+        # RGB values of the circle
+        self.r = rgb[0]
+        self.g = rgb[1]
+        self.b = rgb[2]
+
+        # If filled is True, the circle will be filled in
+        self.filled = filled
+        # Assuming 16x16 display, these will stay None
+        self.display_x = display_x
+        self.display_y = display_y
+
+        if pixels is None:
+            self.pixels = [[(0, 0, 0) for x in range(self.display_x)] for y in range(self.display_y)]
+        else:
+            self.pixels = pixels
+
+    def draw(self):
+        '''Draws the circle on the 16x16 pixel array'''
+        if self.filled:
+            # If filled is True, draw the circle and return the pixels
+            return self.draw_circle(self.pixels, self.center_x, self.center_y, self.radius, self.r, self.g, self.b)
+        else:
+            # If filled is False, draw the circle and then draw a smaller circle on top of it
+            self.pixels = self.draw_circle(self.pixels, self.center_x, self.center_y, self.radius, self.r, self.g, self.b)
+            return self.draw_circle(self.pixels, self.center_x, self.center_y, self.radius - 1, 0, 0, 0)
+
+    def draw_circle(self, pixels, center_x, center_y, radius, r, g, b):
+        '''Draws a circle on the 16x16 pixel array'''
+        for x in range(16):
+            for y in range(16):
+                if (x - center_x)**2 + (y - center_y)**2 <= radius**2:
+                    pixels[x][y] = (r, g, b)
 
         return pixels
