@@ -85,3 +85,69 @@ class Circle():
                     pixels[x][y] = (r, g, b)
 
         return pixels
+    
+class Line():
+    def __init__(self, x1, y1, x2, y2, rgb=(255,255,255), pixels=None, display_x=16, display_y=16):
+        # Coordinates of the line
+        self.x1 = x1
+        self.y1 = y1
+        self.x2 = x2
+        self.y2 = y2
+        
+        # RGB values of the line
+        self.r = rgb[0]
+        self.g = rgb[1]
+        self.b = rgb[2]
+        
+        # Assuming 16x16 display, these will stay None
+        self.display_x = display_x
+        self.display_y = display_y
+        
+        if pixels is None:
+            self.pixels = [[(0, 0, 0) for x in range(self.display_x)] for y in range(self.display_y)]
+        else:
+            self.pixels = pixels
+
+        self.pixels = self.draw_line(self.pixels, self.x1, self.y1, self.x2, self.y2, self.r, self.g, self.b)
+
+    def draw_line(self, pixels, x1, y1, x2, y2, r, g, b):
+        '''Draws a line on the 16x16 pixel array'''
+        # Bresenham's line algorithm
+        dx = abs(x2 - x1)
+        dy = abs(y2 - y1)
+        sx = -1 if x1 > x2 else 1
+        sy = -1 if y1 > y2 else 1
+        err = dx - dy
+
+        while True:
+            pixels[x1][y1] = (r, g, b)
+            if x1 == x2 and y1 == y2:
+                break
+            e2 = 2 * err
+            if e2 > -dy:
+                err -= dy
+                x1 += sx
+            if e2 < dx:
+                err += dx
+                y1 += sy
+
+        return pixels
+
+class Square():
+    def __init__(self, center_x, center_y, side_length, rgb=(255,255,255), pixels=None, filled=True, display_x=16, display_y=16):
+        # Center coordinates of the square
+        self.center_x = center_x
+        self.center_y = center_y
+        self.side_length = side_length
+
+    def draw(self):
+        '''Draws the square on the 16x16 pixel array'''
+        if self.filled:
+            # If filled is True, draw the square and return the pixels
+            return self.draw_square(self.pixels, self.center_x, self.center_y, self.side_length, self.r, self.g, self.b)
+        else:
+            # If filled is False, draw the square and then draw a smaller square on top of it
+            self.pixels = self.draw_square(self.pixels, self.center_x, self.center_y, self.side_length, self.r, self.g, self.b)
+            return self.draw_square(self.pixels, self.center_x, self.center_y, self.side_length - 1, 0, 0, 0)
+        
+        
