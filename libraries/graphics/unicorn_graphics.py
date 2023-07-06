@@ -107,7 +107,7 @@ class Line():
         return pixels
 
 class Square():
-    def __init__(self, c1, c2, c3, c4, side_length, rgb=(255,255,255), pixels=None, filled=True, display_x=16, display_y=16):
+    def __init__(self, c1, c2, c3, c4, rgb=(255,255,255), pixels=None, filled=True, display_x=16, display_y=16):
         # Center coordinates of the square
         self.c1 = c1
         self.c2 = c2
@@ -119,6 +119,7 @@ class Square():
         self.g = rgb[1]
         self.b = rgb[2]
 
+        self.filled = filled
         self.display_x = display_x
         self.display_y = display_y
 
