@@ -1,4 +1,5 @@
 import unicornhathd
+import numpy as np
 
 class Unicorn_Graphics():
     '''Custom graphics class for the Unicorn HAT HD'''
@@ -39,6 +40,9 @@ class Circle():
             self.pixels = [[(0, 0, 0) for x in range(self.display_x)] for y in range(self.display_y)]
         else:
             self.pixels = pixels
+
+        # Draw the circle
+        self.pixels = self.draw()
 
     def draw(self):
         '''Draws the circle on the 16x16 pixel array'''
@@ -106,15 +110,15 @@ class Line():
 
         return pixels
 
-class Square():
+class Quad():
     def __init__(self, c1, c2, c3, c4, rgb=(255,255,255), pixels=None, filled=True, display_x=16, display_y=16):
-        # Center coordinates of the square
+        # Center coordinates of the Quad
         self.c1 = c1
         self.c2 = c2
         self.c3 = c3
         self.c4 = c4
 
-        # RGB values of the square
+        # RGB values of the Quad
         self.r = rgb[0]
         self.g = rgb[1]
         self.b = rgb[2]
@@ -128,18 +132,24 @@ class Square():
         else:
             self.pixels = pixels
 
-        # Draw the square into the 16x16 pixel array
-        self.draw_square(self.pixels, self.c1, self.c2, self.c3, self.c4, self.r, self.g, self.b, self.filled)
+        # Draw the Quad into the 16x16 pixel array
+        self.pixels = self.draw_quad(self.pixels, self.c1, self.c2, self.c3, self.c4, self.r, self.g, self.b, self.filled)
         
-    def draw_square(self, pixels, c1, c2, c3, c4, r, g, b, filled):
-        '''Draws a square on the 16x16 pixel array'''
-        # Draw the square
-        pixels = Line(c1[0], c1[1], c2[0], c2[1], r, g, b, pixels=pixels).pixels
-        pixels = Line(c2[0], c2[1], c3[0], c3[1], r, g, b, pixels=pixels).pixels
-        pixels = Line(c3[0], c3[1], c4[0], c4[1], r, g, b, pixels=pixels).pixels
-        pixels = Line(c4[0], c4[1], c1[0], c1[1], r, g, b, pixels=pixels).pixels
+    def draw_quad(self, pixels, c1, c2, c3, c4, r, g, b, filled):
+        '''
+        Draws a Quad on the 16x16 pixel array
+        c1, c2, c3, c4 are the four corners of the Quad and are tuples of (x, y) coordinates
+        '''
+        # Draw the Quad
+        s1 = np.array(Line(c1[0], c1[1], c2[0], c2[1], (r, g, b), pixels, self.display_x, self.display_y).pixels)
+        s2 = np.array(Line(c2[0], c2[1], c3[0], c3[1], (r, g, b), pixels, self.display_x, self.display_y).pixels)
+        s3 = np.array(Line(c3[0], c3[1], c4[0], c4[1], (r, g, b), pixels, self.display_x, self.display_y).pixels)
+        s4 = np.array(Line(c4[0], c4[1], c1[0], c1[1], (r, g, b), pixels, self.display_x, self.display_y).pixels)
 
-        # Fill in the square
+        # Combine the four matrices
+        pixels = s1 + s2 + s3 + s4
+
+        # Fill in the Quad
         if filled:
             for x in range(c1[0], c3[0]):
                 for y in range(c1[1], c3[1]):
