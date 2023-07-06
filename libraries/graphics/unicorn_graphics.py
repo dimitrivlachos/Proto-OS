@@ -119,6 +119,11 @@ class Square():
         self.g = rgb[1]
         self.b = rgb[2]
 
+        if pixels is None:
+            self.pixels = [[(0, 0, 0) for x in range(self.display_x)] for y in range(self.display_y)]
+        else:
+            self.pixels = pixels
+
         # Draw the square into the 16x16 pixel array
         self.draw_square(self.pixels, self.c1, self.c2, self.c3, self.c4, self.r, self.g, self.b, self.filled)
         
