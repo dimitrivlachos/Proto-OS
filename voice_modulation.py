@@ -2,7 +2,7 @@ import numpy as np
 import sounddevice as sd
 import rubberband
 import librosa
-from util.audiolib import AudioLib
+from libraries.audio.audiolib import AudioLib
 
 class AudioHandler(object):
     def __init__(self):
