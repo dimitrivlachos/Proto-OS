@@ -119,6 +119,9 @@ class Square():
         self.g = rgb[1]
         self.b = rgb[2]
 
+        self.display_x = display_x
+        self.display_y = display_y
+
         if pixels is None:
             self.pixels = [[(0, 0, 0) for x in range(self.display_x)] for y in range(self.display_y)]
         else:
