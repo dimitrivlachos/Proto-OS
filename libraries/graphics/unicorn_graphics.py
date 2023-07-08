@@ -156,7 +156,7 @@ class Quad():
             for x in range(16):
                 fill = False
                 for y in range(16):
-                    if pixels[x][y] != (0, 0, 0):
+                    if pixels[x][y] == (r, g, b):
                         fill = not fill
                     if fill:
                         pixels[x][y] = (r, g, b)
