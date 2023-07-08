@@ -139,7 +139,9 @@ class Quad():
         '''
         Draws a Quad on the 16x16 pixel array
         c1, c2, c3, c4 are the four corners of the Quad and are tuples of (x, y) coordinates
+        Lines are drawn between c1 and c2, c2 and c3, c3 and c4, and c4 and c1
         '''
+
         # Draw the Quad
         s1 = np.array(Line(c1[0], c1[1], c2[0], c2[1], (r, g, b), pixels, self.display_x, self.display_y).pixels)
         s2 = np.array(Line(c2[0], c2[1], c3[0], c3[1], (r, g, b), pixels, self.display_x, self.display_y).pixels)
