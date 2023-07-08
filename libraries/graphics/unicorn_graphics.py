@@ -151,19 +151,15 @@ class Quad():
         # Combine the four matrices
         pixels = s1 + s2 + s3 + s4
 
-        print(pixels)
-
         # Fill in the Quad
         if filled:
             for x in range(16):
                 fill = False
                 for y in range(16):
                     r_, g_, b_ = pixels[x][y]
-                    if r_ == r and g_ == g and b_ == b:
+                    if r_ != 0 and g_ != 0 and b_ != 0:
                         fill = not fill
                     if fill:
                         pixels[x][y] = (r, g, b)
-            
-        print(pixels)
 
         return pixels
