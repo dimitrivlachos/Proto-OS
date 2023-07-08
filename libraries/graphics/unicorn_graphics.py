@@ -111,7 +111,7 @@ class Line():
         return pixels
 
 class Quad():
-    def __init__(self, c1, c2, c3, c4, rgb=(255,255,255), pixels=None, filled=True, display_x=16, display_y=16):
+    def __init__(self, c1, c2, c3, c4, rgb=(255,255,255), pixels=None, filled=False, display_x=16, display_y=16):
         # Center coordinates of the Quad
         self.c1 = c1
         self.c2 = c2
@@ -142,6 +142,11 @@ class Quad():
         Lines are drawn between c1 and c2, c2 and c3, c3 and c4, and c4 and c1
         '''
 
+        def fill_scanline(start_x, end_x, y, r, g, b):
+            # Fill a horizontal scanline with the specified color
+            for x in range(start_x, end_x + 1):
+                pixels[y][x] = (r, g, b)
+
         # Draw the Quad
         s1 = np.array(Line(c1[0], c1[1], c2[0], c2[1], (r, g, b), pixels, self.display_x, self.display_y).pixels)
         s2 = np.array(Line(c2[0], c2[1], c3[0], c3[1], (r, g, b), pixels, self.display_x, self.display_y).pixels)
@@ -153,8 +158,39 @@ class Quad():
 
         # Fill in the Quad
         if filled:
-            for x in range(c1[0], c3[0]):
-                for y in range(c1[1], c3[1]):
-                    pixels[x][y] = (r, g, b)
+            # Find the minimum and maximum y-coordinates
+            min_y = min(c1[1], c2[1], c3[1], c4[1])
+            max_y = max(c1[1], c2[1], c3[1], c4[1])
+
+            # Iterate over each scanline in the Quad
+            for y in range(min_y, max_y + 1):
+                # Create a list to store the intersection points on the scanline
+                intersections = []
+
+                # Check each side of the Quad for intersections with the scanline
+                if c1[1] <= y < c2[1] or c2[1] <= y < c1[1]:
+                    x = c1[0] + (c2[0] - c1[0]) * (y - c1[1]) / (c2[1] - c1[1])
+                    intersections.append(x)
+
+                if c2[1] <= y < c3[1] or c3[1] <= y < c2[1]:
+                    x = c2[0] + (c3[0] - c2[0]) * (y - c2[1]) / (c3[1] - c2[1])
+                    intersections.append(x)
+
+                if c3[1] <= y < c4[1] or c4[1] <= y < c3[1]:
+                    x = c3[0] + (c4[0] - c3[0]) * (y - c3[1]) / (c4[1] - c3[1])
+                    intersections.append(x)
+
+                if c4[1] <= y < c1[1] or c1[1] <= y < c4[1]:
+                    x = c4[0] + (c1[0] - c4[0]) * (y - c4[1]) / (c1[1] - c4[1])
+                    intersections.append(x)
+
+                # Sort the intersection points in ascending order
+                intersections.sort()
+
+                # Fill the scanline between each pair of intersection points
+                for i in range(0, len(intersections), 2):
+                    start_x = int(intersections[i])
+                    end_x = int(intersections[i + 1]) if i + 1 < len(intersections) else start_x
+                    fill_scanline(start_x, end_x, y, r, g, b)
 
         return pixels
