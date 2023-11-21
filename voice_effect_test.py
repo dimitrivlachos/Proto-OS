@@ -1,7 +1,7 @@
 import librosa
 import numpy as np
 import sounddevice as sd
-from util.audiolib import AudioLib
+from libraries.audio.audiolib import AudioLib
 
 def apply_pitch_shift(filename, semitones):
     # Load the audio file
