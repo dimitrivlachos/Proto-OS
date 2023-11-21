@@ -1,3 +1,6 @@
+# Dummy module to suppress non-linux machine errors
+unicornhathd.py
+
 # Test files to be ignored
 output.wav
 
