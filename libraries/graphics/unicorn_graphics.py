@@ -169,19 +169,17 @@ class Quad():
 # # # # # # # # # # #
 # Helper functions  #
 
-def overlap_pixels(pixels1, pixels2):
+def overlay(top, bottom):
     '''
     Combines two pixel arrays
     
     pixels1 and pixels2 are numpy.ndarrays of shape (16, 16, 3)
-
-    pixels1 is the bottom layer and pixels2 is the top layer
     '''
     
     # Create a mask of the pixels that are not black
-    mask = np.any(pixels1 != 0, axis=2)
+    mask = np.any(top != 0, axis=2)
 
     # Combine the two pixel arrays
-    result = np.where(mask[:,:,None], pixels1, pixels2)
+    result = np.where(mask[:,:,None], top, bottom)
 
     return result
