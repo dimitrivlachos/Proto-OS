@@ -180,6 +180,11 @@ def overlay(top, bottom):
     mask = np.any(top != 0, axis=2)
 
     # Combine the two pixel arrays
+    # np.where(condition, x, y) returns an array with the same shape as condition
+    # where the elements are from x if condition is True, and from y otherwise
+    # In this case, we are using the mask to determine which pixels to use
+    # If the mask is True, use the pixels from the top array
+    # If the mask is False, use the pixels from the bottom array
     result = np.where(mask[:,:,None], top, bottom)
 
     return result
