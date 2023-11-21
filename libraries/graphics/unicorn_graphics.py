@@ -61,6 +61,8 @@ class Circle():
                 if (x - center_x)**2 + (y - center_y)**2 <= radius**2:
                     pixels[x][y] = (r, g, b)
 
+        # Return pixels as a numpy.ndarray
+        pixels = np.array(pixels)
         return pixels
     
 class Line():
