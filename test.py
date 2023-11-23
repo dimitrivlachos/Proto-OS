@@ -7,14 +7,14 @@ u = unicorn_graphics.Unicorn_Graphics()
 circle1 = unicorn_graphics.Circle(8, 8, 8, rgb=(255, 0, 0))
 
 # Draw a smaller circle on top of the first circle
-circle2 = unicorn_graphics.Circle(8, 8, 6, rgb=(0, 0, 255), filled=False)
+circle2 = unicorn_graphics.Circle(8, 8, 6, rgb=(0, 0, 255), filled=False, pixels=circle1.pixels)
 
 #Draw a square
-square = unicorn_graphics.Quad((1,1), (1,5), (5,5), (5,1), rgb=(0, 255, 0))
+square = unicorn_graphics.Quad((1,1), (1,5), (5,5), (5,1), rgb=(0, 255, 0), pixels=circle2.pixels)
 
 #print(type(square.pixels))
 
-pixels = unicorn_graphics.overlay(circle2.pixels, circle1.pixels)
-pixels = unicorn_graphics.overlay(square.pixels, pixels)
+#pixels = unicorn_graphics.overlay(circle2.pixels, circle1.pixels)
+#pixels = unicorn_graphics.overlay(square.pixels, pixels)
 
-u.draw(pixels)
+u.draw(square.pixels)
