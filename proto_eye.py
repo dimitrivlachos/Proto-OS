@@ -8,7 +8,7 @@ u = ug.Unicorn_Graphics()
 sclera = ug.Circle(8, 8, 4, rgb=(255, 192, 203))
 
 # Draw a quad for the eyebrow
-eyebrow = ug.Quad((1, 1), (1, 16), (8, 1), (9, 16), rgb=(0, 0, 0), pixels=sclera.pixels)
+eyebrow = ug.Quad((0, 0), (0, 15), (8, 0), (9, 15), rgb=(0, 0, 0), pixels=sclera.pixels)
 
 
 
