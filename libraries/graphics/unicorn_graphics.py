@@ -73,13 +73,14 @@ class Display():
         '''Updates the display to the Unicorn HAT HD'''
         self.uni_graphics.draw(self.pixels)
 
-    def clear(self):
+    def clear(self, no_update=False):
         '''Clears the pixels in the array'''
         for x in range(self.display_x):
             for y in range(self.display_y):
                 self.pixels[x][y] = Pixel()
         
-        self.update()
+        if not no_update:
+            self.update()
 
     def set(self, pixels):
         '''Sets the pixels in the array

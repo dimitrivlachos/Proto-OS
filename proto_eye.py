@@ -1,6 +1,7 @@
 import numpy as np
 import libraries.graphics.unicorn_graphics as ug
 import pygame
+import time
 
 # Initialize pygame
 pygame.init()
@@ -46,9 +47,10 @@ while running:
 
             eyebrow = ug.Polygon([(0, 0), (0, 15), (eyerow_left, 15), (eyerow_right, 0)], filled=True, rgb=(255, 0, 0))
 
-            d.clear()
+            d.clear(no_update=True)
             d.set(eyebrow.pixels)
             d.draw_on_bottom(sclera.pixels)
+            time.sleep(0.1)
 
 # Quit pygame
 pygame.quit()
