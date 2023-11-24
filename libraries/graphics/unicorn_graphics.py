@@ -312,9 +312,15 @@ def overlay(top, bottom):
 # Test code         #
 
 if __name__ == '__main__':
+    import time
     d = Display()
 
     # Draw a circle
-    circle = Circle(8, 8, 4, filled=False, rgb=(255, 0, 0))
+    circle1 = Circle(8, 8, 5, filled=False, rgb=(255, 0, 0))
+    d.set(circle1.pixels)
+    # delay
+    
+    time.sleep(1)
 
-    d.set(circle.pixels)
+    circle2 = Circle(8, 8, 3, filled=True, rgb=(0, 255, 0))
+    d.draw_on_top(circle2.pixels)
