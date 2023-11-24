@@ -9,61 +9,177 @@ class Unicorn_Graphics():
         unicornhathd.clear()
 
     def draw(self, pixels):
-        '''Draws the pixels to the Unicorn HAT HD'''
+        '''Draws the pixels to the Unicorn HAT HD
+        
+        pixels is a 2d array of Pixel objects
+        '''
         for x in range(16):
             for y in range(16):
-                r, g, b = pixels[x][y]
+                pixel = pixels[x][y]
+                if pixel.is_set:
+                    r = pixel.r
+                    g = pixel.g
+                    b = pixel.b
+                else:
+                    r = 0
+                    g = 0
+                    b = 0
+
                 unicornhathd.set_pixel(x, y, r, g, b)
 
         unicornhathd.show()
+
+class Pixel():
+    '''
+    Pixel object for drawing on the Unicorn HAT HD
+
+    r, g, b are the RGB values of the pixel
+    is_set is a boolean that is True if the pixel has been set and False otherwise
+    '''
+    def __init__(self):
+        '''Initializes an unset pixel'''
+        self.r = None
+        self.g = None
+        self.b = None
+        self.is_set = False
+
+    def __init__(self, r, g, b):
+        '''Initializes a set pixel with RGB values'''
+        self.set(r, g, b)
+
+    def set(self, r, g, b):
+        '''Sets the RGB values of the pixel'''
+        # Clamp the RGB values to 0-255 and convert them to ints
+        self.r = int(max(0, min(255, r)))
+        self.g = int(max(0, min(255, g)))
+        self.b = int(max(0, min(255, b)))
+        # Set is_set to True
+        self.is_set = True
+
+    def unset(self):
+        '''Unsets the pixel'''
+        self.r = None
+        self.g = None
+        self.b = None
+        self.is_set = False
+
+class Display():
+    '''Display object for drawing on the Unicorn HAT HD'''
+    def __init__(self, display_x=16, display_y=16):
+        self.display_x = display_x
+        self.display_y = display_y
+        # Create a 16x16 array of pixels
+        self.pixels = [[Pixel() for x in range(self.display_x)] for y in range(self.display_y)]
+
+        self.uni_graphics = Unicorn_Graphics()
+    
+    def update(self):
+        '''Updates the display to the Unicorn HAT HD'''
+        self.uni_graphics.draw(self.pixels)
+
+    def clear(self):
+        '''Clears the pixels in the array'''
+        for x in range(self.display_x):
+            for y in range(self.display_y):
+                self.pixels[x][y] = Pixel()
+        
+        self.update()
+
+    def set(self, pixels):
+        '''Sets the pixels in the array
+        
+        pixels is a 2d array of Pixel objects'''
+        self.pixels = pixels
+        self.update()
+
+    def draw_on_top(self, pixels):
+        '''Draws the pixels on top of the existing pixels
+        
+        pixels is a 2d array of Pixel objects'''
+        for i, row in enumerate(pixels):
+            for j, pixel in enumerate(row):
+                if pixel.is_set: # Only set the pixel if it is set
+                    self.pixels[i][j].set(pixel.r, pixel.g, pixel.b)
+
+        self.update()
+
+    def draw_on_bottom(self, pixels):
+        '''Draws the pixels on the bottom of the existing pixels
+        
+        pixels is a 2d array of Pixel objects'''
+        for i, row in enumerate(pixels):
+            for j, pixel in enumerate(row):
+                if pixel.is_set and not self.pixels[i][j].is_set: # Only set the pixel if it is not already set
+                    self.pixels[i][j].set(pixel.r, pixel.g, pixel.b)
+
+        self.update()
+
     
 class Circle():
     '''Circle object for drawing on the Unicorn HAT HD'''
-    def __init__(self, center_x, center_y, radius, rgb=(255,255,255), pixels=None, filled=True, display_x=16, display_y=16):
+    def __init__(self, center_x, center_y, radius, rgb=(255,255,255), filled=True, display_x=16, display_y=16):
         # Center coordinates of the circle
         self.center_x = center_x
         self.center_y = center_y
-        self.radius = radius # Radius of the circle
 
-        # RGB values of the circle
-        self.r = rgb[0]
-        self.g = rgb[1]
-        self.b = rgb[2]
+        # Radius of the circle
+        self.radius = radius
 
-        # If filled is True, the circle will be filled in
+        # Pixel RGB values of the circle
+        self.pixels = [[Pixel() for x in range(display_x)] for y in range(display_y)]
+
+        # Whether the circle is filled or not
         self.filled = filled
-        # Assuming 16x16 display, these will stay None
+
+        # Set the display size
         self.display_x = display_x
         self.display_y = display_y
 
-        if pixels is None:
-            self.pixels = [[(0, 0, 0) for x in range(self.display_x)] for y in range(self.display_y)]
+        # Draw the circle into the 16x16 pixel array
+        if filled:
+            self.draw_outline()
         else:
-            self.pixels = pixels
+            self.draw_filled()
 
-        # Draw the circle
-        self.pixels = self.draw()
+    def draw_outline(self):
+        '''Draws the outline of the circle using breseham's algorithm'''
+        # Bresenham's circle algorithm
+        x = 0
+        y = self.radius
+        d = 3 - 2 * self.radius
 
-    def draw(self):
-        '''Draws the circle on the 16x16 pixel array'''
-        if self.filled:
-            # If filled is True, draw the circle and return the pixels
-            return self.draw_circle(self.pixels, self.center_x, self.center_y, self.radius, self.r, self.g, self.b)
-        else:
-            # If filled is False, draw the circle and then draw a smaller circle on top of it
-            self.pixels = self.draw_circle(self.pixels, self.center_x, self.center_y, self.radius, self.r, self.g, self.b)
-            return self.draw_circle(self.pixels, self.center_x, self.center_y, self.radius - 1, 0, 0, 0)
+        while y >= x:
+            self.pixels[self.center_x + x][self.center_y + y].set(self.r, self.g, self.b)
+            x += 1
+            if d > 0:
+                y -= 1
+                d = d + 4 * (x - y) + 10
+            else:
+                d = d + 4 * x + 6
+       
+    def draw_filled(self):
+        '''Draws the filled circle using breseham's algorithm'''
+        # Bresenham's circle algorithm
+        x = 0
+        y = self.radius
+        d = 3 - 2 * self.radius
 
-    def draw_circle(self, pixels, center_x, center_y, radius, r, g, b):
-        '''Draws a circle on the 16x16 pixel array'''
-        for x in range(16):
-            for y in range(16):
-                if (x - center_x)**2 + (y - center_y)**2 <= radius**2:
-                    pixels[x][y] = (r, g, b)
-
-        # Return pixels as a numpy.ndarray
-        pixels = np.array(pixels)
-        return pixels
+        while y >= x:
+            # Draw the top and bottom halves of the circle
+            for i in range(self.center_x - x, self.center_x + x + 1):
+                self.pixels[i][self.center_y + y].set(self.r, self.g, self.b)
+                self.pixels[i][self.center_y - y].set(self.r, self.g, self.b)
+            # Draw the left and right halves of the circle
+            for i in range(self.center_x - y, self.center_x + y + 1):
+                self.pixels[i][self.center_y + x].set(self.r, self.g, self.b)
+                self.pixels[i][self.center_y - x].set(self.r, self.g, self.b)
+            x += 1
+            if d > 0:
+                y -= 1
+                d = d + 4 * (x - y) + 10
+            else:
+                d = d + 4 * x + 6
+        
     
 class Line():
     def __init__(self, x1, y1, x2, y2, rgb=(255,255,255), pixels=None, display_x=16, display_y=16):
@@ -188,3 +304,25 @@ def overlay(top, bottom):
     result = np.where(mask[:,:,None], top, bottom)
 
     return result
+
+# # # # # # # # # # #
+# Test code         #
+
+if __name__ == '__main__':
+    u = Unicorn_Graphics()
+
+    # Draw a circle
+    circle1 = Circle(8, 8, 8, rgb=(255, 0, 0))
+
+    # Draw a smaller circle on top of the first circle
+    circle2 = Circle(8, 8, 6, rgb=(0, 0, 255), filled=False, pixels=circle1.pixels)
+
+    #Draw a square
+    square = Quad((1,1), (1,5), (5,5), (5,1), rgb=(0, 255, 0), pixels=circle2.pixels)
+
+    #print(type(square.pixels))
+
+    #pixels = overlay(circle2.pixels, circle1.pixels)
+    #pixels = overlay(square.pixels, pixels)
+
+    u.draw(square.pixels)
