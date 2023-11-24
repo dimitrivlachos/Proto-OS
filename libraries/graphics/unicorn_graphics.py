@@ -309,20 +309,9 @@ def overlay(top, bottom):
 # Test code         #
 
 if __name__ == '__main__':
-    u = Unicorn_Graphics()
+    d = Display()
 
     # Draw a circle
-    circle1 = Circle(8, 8, 8, rgb=(255, 0, 0))
+    circle = Circle(8, 8, 4, rgb=(255, 0, 0))
 
-    # Draw a smaller circle on top of the first circle
-    circle2 = Circle(8, 8, 6, rgb=(0, 0, 255), filled=False, pixels=circle1.pixels)
-
-    #Draw a square
-    square = Quad((1,1), (1,5), (5,5), (5,1), rgb=(0, 255, 0), pixels=circle2.pixels)
-
-    #print(type(square.pixels))
-
-    #pixels = overlay(circle2.pixels, circle1.pixels)
-    #pixels = overlay(square.pixels, pixels)
-
-    u.draw(square.pixels)
+    d.set(circle.pixels)
