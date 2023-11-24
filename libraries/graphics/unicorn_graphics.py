@@ -161,25 +161,10 @@ class Circle():
     def draw_filled(self):
         '''Draws the filled circle using breseham's algorithm'''
         # Bresenham's circle algorithm
-        x = 0
-        y = self.radius
-        d = 3 - 2 * self.radius
-
-        while y >= x:
-            # Draw the top and bottom halves of the circle
-            for i in range(self.center_x - x, self.center_x + x + 1):
-                self.pixels[i][self.center_y + y].set(self.r, self.g, self.b)
-                self.pixels[i][self.center_y - y].set(self.r, self.g, self.b)
-            # Draw the left and right halves of the circle
-            for i in range(self.center_x - y, self.center_x + y + 1):
-                self.pixels[i][self.center_y + x].set(self.r, self.g, self.b)
-                self.pixels[i][self.center_y - x].set(self.r, self.g, self.b)
-            x += 1
-            if d > 0:
-                y -= 1
-                d = d + 4 * (x - y) + 10
-            else:
-                d = d + 4 * x + 6
+        for x in range(self.display_x):
+            for y in range(self.display_y):
+                if (x - self.center_x)**2 + (y - self.center_y)**2 <= self.radius**2:
+                    self.pixels[x][y].set(self.r, self.g, self.b)
         
     
 class Line():
@@ -313,6 +298,16 @@ if __name__ == '__main__':
     d = Display()
 
     # Draw a circle
-    circle = Circle(8, 8, 4, rgb=(255, 0, 0))
+    circle = Circle(8, 8, 4, filled=False, rgb=(255, 0, 0))
+
+    for row in circle:
+        row = ""
+        for pixel in row:
+            if pixel.is_set:
+                row += "X"
+            else:
+                row += " "
+
+        print(row)
 
     d.set(circle.pixels)
