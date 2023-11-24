@@ -26,6 +26,9 @@ eyebrow_position = 0
 d.set(sclera.pixels)
 d.draw_on_top(eyebrow.pixels)
 
+def map_range(value, low1, high1, low2, high2):
+    return low2 + (high2 - low2) * (value - low1) / (high1 - low1)
+
 # Main loop
 running = True
 while running:
@@ -34,21 +37,22 @@ while running:
             running = False
         elif event.type == pygame.JOYAXISMOTION:
             d.clear()
-            # Check joystick axes for tilt and open/close
             tilt = joystick.get_axis(0)  # Left and right motion
             open_close = joystick.get_axis(1)  # Up and down motion
 
-            # Adjust the position of the eyebrow based on joystick input
-            eyebrow_position += tilt * 2  # Adjust the factor as needed
-            eyebrow_position = max(0, min(15, eyebrow_position))  # Ensure position is within bounds
+            print("tilt: " + str(tilt))
+            print("open_close: " + str(open_close))
 
-            # Set the new position of the eyebrow
-            eyebrow.vertices = [(0, eyebrow_position), (0, 15), (6, 15), (12, eyebrow_position)]
-            eyebrow.draw_filled()
+            vertical_delta = map_range(open_close, -1, 1, -15, 15)
 
-            # Update the display
+            eyerow_left = map_range(tilt, -1, 1, 0, 15 + vertical_delta)
+            eyerow_right = map_range(tilt, -1, 1, 15 + vertical_delta, 0)
+
+            eyebrow = ug.Polygon([(0, 0), (0, 15), (eyerow_left, 15), (eyerow_right, 0)], filled=True, rgb=(255, 0, 0))
+
             d.set(sclera.pixels)
             d.draw_on_top(eyebrow.pixels)
 
 # Quit pygame
 pygame.quit()
+
