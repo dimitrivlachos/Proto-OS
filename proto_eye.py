@@ -50,7 +50,5 @@ while running:
             d.set(sclera.pixels)
             d.draw_on_top(eyebrow.pixels)
 
-    pygame.display.flip()
-
 # Quit pygame
 pygame.quit()
