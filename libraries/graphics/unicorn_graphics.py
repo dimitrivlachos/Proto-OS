@@ -43,10 +43,6 @@ class Pixel():
         self.b = None
         self.is_set = False
 
-    def __init__(self, r, g, b):
-        '''Initializes a set pixel with RGB values'''
-        self.set(r, g, b)
-
     def set(self, r, g, b):
         '''Sets the RGB values of the pixel'''
         # Clamp the RGB values to 0-255 and convert them to ints
