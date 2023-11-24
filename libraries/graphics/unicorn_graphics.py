@@ -122,6 +122,11 @@ class Circle():
         self.center_x = center_x
         self.center_y = center_y
 
+        # RGB values of the circle
+        self.r = rgb[0]
+        self.g = rgb[1]
+        self.b = rgb[2]
+
         # Radius of the circle
         self.radius = radius
 
