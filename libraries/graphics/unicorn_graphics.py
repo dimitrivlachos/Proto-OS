@@ -281,30 +281,35 @@ class Polygon():
                     if line.pixels[x][y].is_set:
                         self.pixels[x][y].set(line.r, line.g, line.b)
 
+    def find_intersections(self, y):
+        intersections = []
+        for i in range(len(self.vertices)):
+            start = self.vertices[i]
+            end = self.vertices[(i + 1) % len(self.vertices)]
+
+            # Check if the line segment crosses the scanline
+            if min(start[1], end[1]) <= y < max(start[1], end[1]):
+                # Calculate the x-coordinate of the intersection
+                x_intersection = int(start[0] + (y - start[1]) / (end[1] - start[1]) * (end[0] - start[0]))
+                intersections.append(x_intersection)
+
+        return intersections
+
     def draw_filled(self):
-        '''Draws the filled polygon'''
-        # Find the minimum and maximum y values
         min_y = min([vertex[1] for vertex in self.vertices])
         max_y = max([vertex[1] for vertex in self.vertices])
 
-        # Find the x values of the intersections of the polygon with each horizontal line
-        intersections = []
-        for y in range(min_y, max_y+1):
-            intersections.append(self.find_intersections(y))
+        # Iterate through scanlines
+        for y in range(min_y, max_y + 1):
+            intersections = self.find_intersections(y)
+            intersections.sort()
 
-        # Fill in the polygon
-        for y in range(min_y, max_y+1):
-            # Find the intersections of the polygon with the current horizontal line
-            x_intersections = intersections[y - min_y]
+            # Fill in the pixels between intersections
+            for i in range(0, len(intersections), 2):
+                start = max(0, intersections[i])
+                end = min(self.display_x - 1, intersections[i + 1])
 
-            # Sort the intersections by x value
-            x_intersections.sort()
-
-            # Fill in the pixels between each pair of intersections
-            for i in range(0, len(x_intersections), 2):
-                start = x_intersections[i]
-                end = x_intersections[i+1]
-                for x in range(start, end+1):
+                for x in range(start, end + 1):
                     self.pixels[x][y].set(self.r, self.g, self.b)
         
     
