@@ -343,10 +343,10 @@ if __name__ == '__main__':
     time.sleep(1)
 
     # Draw a polygon
-    polygon1 = Polygon([(0, 0), (15, 0), (0, 15)], filled=False, rgb=(255, 0, 255))
+    polygon1 = Polygon([(2, 2), (13, 2), (2, 13)], filled=False, rgb=(255, 0, 255))
     d.draw_on_top(polygon1.pixels)
 
     time.sleep(1)
 
-    polygon2 = Polygon([(0, 0), (15, 0), (15, 15)], filled=True, rgb=(255, 255, 0))
-    d.draw_on_top(polygon2.pixels)
+    polygon2 = Polygon([(0, 0), (12, 2), (14, 15)], filled=True, rgb=(255, 255, 0))
+    d.draw_on_bottom(polygon2.pixels)
