@@ -236,82 +236,81 @@ class Line():
                 err += dx
                 y1 += sy
 
-class Quad():
-    def __init__(self, c1, c2, c3, c4, rgb=(255,255,255), pixels=None, filled=False, display_x=16, display_y=16):
-        # Center coordinates of the Quad
-        self.c1 = c1
-        self.c2 = c2
-        self.c3 = c3
-        self.c4 = c4
+class Polygon():
+    def __init__(self, vertices, rgb=(255,255,255), filled=False, display_x=16, display_y=16):
+        '''Initializes a polygon object
+        
+        vertices is a list of tuples of (x, y) coordinates
+        rgb is a tuple of (r, g, b) values
+        '''
+        # Vertices of the polygon
+        self.vertices = vertices
 
-        # RGB values of the Quad
+        # RGB values of the polygon
         self.r = rgb[0]
         self.g = rgb[1]
         self.b = rgb[2]
 
+        # Pixel RGB values of the polygon
+        self.pixels = [[Pixel() for x in range(display_x)] for y in range(display_y)]
+
+        # Whether the polygon is filled or not
         self.filled = filled
+
+        # Set the display size
         self.display_x = display_x
         self.display_y = display_y
 
-        if pixels is None:
-            self.pixels = [[(0, 0, 0) for x in range(self.display_x)] for y in range(self.display_y)]
-        else:
-            self.pixels = pixels
-
-        # Draw the Quad into the 16x16 pixel array
-        self.pixels = self.draw_quad(self.pixels, self.c1, self.c2, self.c3, self.c4, self.r, self.g, self.b, self.filled)
-        
-    def draw_quad(self, pixels, c1, c2, c3, c4, r, g, b, filled):
-        '''
-        Draws a Quad on the 16x16 pixel array
-        c1, c2, c3, c4 are the four corners of the Quad and are tuples of (x, y) coordinates
-        Lines are drawn between c1 and c2, c2 and c3, c3 and c4, and c4 and c1
-        '''
-
-        # Draw the Quad
-        s1 = np.array(Line(c1[0], c1[1], c2[0], c2[1], (r, g, b), pixels, self.display_x, self.display_y).pixels)
-        s2 = np.array(Line(c2[0], c2[1], c3[0], c3[1], (r, g, b), pixels, self.display_x, self.display_y).pixels)
-        s3 = np.array(Line(c3[0], c3[1], c4[0], c4[1], (r, g, b), pixels, self.display_x, self.display_y).pixels)
-        s4 = np.array(Line(c4[0], c4[1], c1[0], c1[1], (r, g, b), pixels, self.display_x, self.display_y).pixels)
-
-        # Combine the four matrices
-        pixels = s1 + s2 + s3 + s4
-
-        # Fill in the Quad
+        # Draw the polygon into the 16x16 pixel array
         if filled:
-            for x in range(16):
-                fill = False
-                for y in range(16):
-                    r_, g_, b_ = pixels[x][y]
-                    if r_ != 0 and g_ != 0 and b_ != 0:
-                        fill = not fill
-                    if fill:
-                        pixels[x][y] = (r, g, b)
+            self.draw_filled()
+        else:
+            self.draw_outline()
 
-        return pixels
+    def draw_outline(self):
+        '''Draws the outline of the polygon'''
+        # Draw a line between each pair of vertices
+        for i in range(len(self.vertices)):
+            start = self.vertices[i]
+            end = self.vertices[(i+1) % len(self.vertices)]
+            line = Line(start, end, rgb=(self.r, self.g, self.b))
+            
+            # Draw the line on top of the existing pixels
+            for x in range(self.display_x):
+                for y in range(self.display_y):
+                    if line.pixels[x][y].is_set:
+                        self.pixels[x][y].set(line.r, line.g, line.b)
+
+    def draw_filled(self):
+        '''Draws the filled polygon'''
+        # Find the minimum and maximum y values
+        min_y = min([vertex[1] for vertex in self.vertices])
+        max_y = max([vertex[1] for vertex in self.vertices])
+
+        # Find the x values of the intersections of the polygon with each horizontal line
+        intersections = []
+        for y in range(min_y, max_y+1):
+            intersections.append(self.find_intersections(y))
+
+        # Fill in the polygon
+        for y in range(min_y, max_y+1):
+            # Find the intersections of the polygon with the current horizontal line
+            x_intersections = intersections[y - min_y]
+
+            # Sort the intersections by x value
+            x_intersections.sort()
+
+            # Fill in the pixels between each pair of intersections
+            for i in range(0, len(x_intersections), 2):
+                start = x_intersections[i]
+                end = x_intersections[i+1]
+                for x in range(start, end+1):
+                    self.pixels[x][y].set(self.r, self.g, self.b)
+        
     
 # # # # # # # # # # #
 # Helper functions  #
 
-def overlay(top, bottom):
-    '''
-    Combines two pixel arrays
-    
-    pixels1 and pixels2 are numpy.ndarrays of shape (16, 16, 3)
-    '''
-    
-    # Create a mask of the pixels that are not black
-    mask = np.any(top != 0, axis=2)
-
-    # Combine the two pixel arrays
-    # np.where(condition, x, y) returns an array with the same shape as condition
-    # where the elements are from x if condition is True, and from y otherwise
-    # In this case, we are using the mask to determine which pixels to use
-    # If the mask is True, use the pixels from the top array
-    # If the mask is False, use the pixels from the bottom array
-    result = np.where(mask[:,:,None], top, bottom)
-
-    return result
 
 # # # # # # # # # # #
 # Test code         #
@@ -329,3 +328,20 @@ if __name__ == '__main__':
 
     circle2 = Circle(8, 8, 3, filled=True, rgb=(0, 255, 0))
     d.draw_on_top(circle2.pixels)
+
+    time.sleep(1)
+
+    # Draw a line
+    line1 = Line((0, 0), (15, 15), rgb=(0, 0, 255))
+    d.draw_on_top(line1.pixels)
+
+    time.sleep(1)
+
+    # Draw a polygon
+    polygon1 = Polygon([(0, 0), (15, 0), (0, 15)], filled=False, rgb=(255, 0, 255))
+    d.draw_on_top(polygon1.pixels)
+
+    time.sleep(1)
+
+    polygon2 = Polygon([(0, 0), (15, 0), (15, 15)], filled=True, rgb=(255, 255, 0))
+    d.draw_on_top(polygon2.pixels)
