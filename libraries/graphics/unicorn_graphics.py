@@ -143,20 +143,37 @@ class Circle():
             self.draw_filled()
 
     def draw_outline(self):
-        '''Draws the outline of the circle using breseham's algorithm'''
-        # Bresenham's circle algorithm
+        '''Draws the outline of the circle using Bresenham's algorithm'''
         x = 0
         y = self.radius
         d = 3 - 2 * self.radius
 
         while y >= x:
-            self.pixels[self.center_x + x][self.center_y + y].set(self.r, self.g, self.b)
+            # Draw the eight symmetric points
+            self.draw_circle_points(x, y)
+            
             x += 1
             if d > 0:
                 y -= 1
                 d = d + 4 * (x - y) + 10
             else:
                 d = d + 4 * x + 6
+
+    def draw_circle_points(self, x, y):
+        # Draw the eight symmetric points
+        self.set_pixel(self.center_x + x, self.center_y + y)
+        self.set_pixel(self.center_x - x, self.center_y + y)
+        self.set_pixel(self.center_x + x, self.center_y - y)
+        self.set_pixel(self.center_x - x, self.center_y - y)
+        self.set_pixel(self.center_x + y, self.center_y + x)
+        self.set_pixel(self.center_x - y, self.center_y + x)
+        self.set_pixel(self.center_x + y, self.center_y - x)
+        self.set_pixel(self.center_x - y, self.center_y - x)
+
+    def set_pixel(self, x, y):
+        # Ensure the pixel is within bounds
+        if 0 <= x < len(self.pixels) and 0 <= y < len(self.pixels[0]):
+            self.pixels[x][y].set(self.r, self.g, self.b)
        
     def draw_filled(self):
         '''Draws the filled circle using breseham's algorithm'''
@@ -165,7 +182,6 @@ class Circle():
             for y in range(self.display_y):
                 if (x - self.center_x)**2 + (y - self.center_y)**2 <= self.radius**2:
                     self.pixels[x][y].set(self.r, self.g, self.b)
-        
     
 class Line():
     def __init__(self, x1, y1, x2, y2, rgb=(255,255,255), pixels=None, display_x=16, display_y=16):
