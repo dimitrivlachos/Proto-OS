@@ -45,12 +45,12 @@ while running:
             eyerow_left = map_range(tilt, -1, 1, 0, 15 + vertical_delta)
             eyerow_right = map_range(tilt, -1, 1, 15 + vertical_delta, 0)
 
+            sclera = ug.Circle(8, 8, 6, rgb=(255, 192, 203))
             eyebrow = ug.Polygon([(0, 0), (0, 15), (eyerow_left, 15), (eyerow_right, 0)], filled=True, rgb=(255, 0, 0))
 
             d.clear(no_update=True)
-            d.set(eyebrow.pixels)
-            d.draw_on_bottom(sclera.pixels)
-            time.sleep(0.1)
+            d.set(sclera.pixels)
+            d.draw_on_top(eyebrow.pixels)
 
 # Quit pygame
 pygame.quit()
