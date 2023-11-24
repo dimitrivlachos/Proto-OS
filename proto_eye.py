@@ -47,8 +47,8 @@ while running:
             eyebrow = ug.Polygon([(0, 0), (0, 15), (eyerow_left, 15), (eyerow_right, 0)], filled=True, rgb=(255, 0, 0))
 
             d.clear()
-            d.set(sclera.pixels)
-            d.draw_on_top(eyebrow.pixels)
+            d.set(eyebrow.pixels)
+            d.draw_on_bottom(sclera.pixels)
 
 # Quit pygame
 pygame.quit()
