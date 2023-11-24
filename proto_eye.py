@@ -1,6 +1,7 @@
 import numpy as np
 import libraries.graphics.unicorn_graphics as ug
 import pygame
+import time
 
 # Initialize pygame
 pygame.init()
@@ -32,26 +33,24 @@ def map_range(value, low1, high1, low2, high2):
 # Main loop
 running = True
 while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-        elif event.type == pygame.JOYAXISMOTION:
-            d.clear()
-            tilt = joystick.get_axis(0)  # Left and right motion
-            open_close = joystick.get_axis(1)  # Up and down motion
+    d.clear()
+    tilt = joystick.get_axis(0)  # Left and right motion
+    open_close = joystick.get_axis(1)  # Up and down motion
 
-            print("tilt: " + str(tilt))
-            print("open_close: " + str(open_close))
+    print("tilt: " + str(tilt))
+    print("open_close: " + str(open_close))
 
-            vertical_delta = map_range(open_close, -1, 1, -15, 15)
+    vertical_delta = map_range(open_close, -1, 1, -15, 15)
 
-            eyerow_left = map_range(tilt, -1, 1, 0, 15 + vertical_delta)
-            eyerow_right = map_range(tilt, -1, 1, 15 + vertical_delta, 0)
+    eyerow_left = map_range(tilt, -1, 1, 0, 15 + vertical_delta)
+    eyerow_right = map_range(tilt, -1, 1, 15 + vertical_delta, 0)
 
-            eyebrow = ug.Polygon([(0, 0), (0, 15), (eyerow_left, 15), (eyerow_right, 0)], filled=True, rgb=(255, 0, 0))
+    eyebrow = ug.Polygon([(0, 0), (0, 15), (eyerow_left, 15), (eyerow_right, 0)], filled=True, rgb=(255, 0, 0))
 
-            d.set(sclera.pixels)
-            d.draw_on_top(eyebrow.pixels)
+    d.set(sclera.pixels)
+    d.draw_on_top(eyebrow.pixels)
+
+    time.sleep(0.1)
 
 # Quit pygame
 pygame.quit()
