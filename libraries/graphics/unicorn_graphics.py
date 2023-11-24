@@ -300,7 +300,7 @@ if __name__ == '__main__':
     # Draw a circle
     circle = Circle(8, 8, 4, filled=False, rgb=(255, 0, 0))
 
-    for row in circle:
+    for row in circle.pixels:
         row = ""
         for pixel in row:
             if pixel.is_set:
