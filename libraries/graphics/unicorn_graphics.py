@@ -138,9 +138,10 @@ class Circle():
 
         # Draw the circle into the 16x16 pixel array
         if filled:
-            self.draw_outline()
-        else:
             self.draw_filled()
+        else:
+            self.draw_outline()
+            
 
     def draw_outline(self):
         '''Draws the outline of the circle using Bresenham's algorithm'''
@@ -315,15 +316,5 @@ if __name__ == '__main__':
 
     # Draw a circle
     circle = Circle(8, 8, 4, filled=False, rgb=(255, 0, 0))
-
-    for row in circle.pixels:
-        row = ""
-        for pixel in row:
-            if pixel.is_set:
-                row += "X"
-            else:
-                row += " "
-
-        print(row)
 
     d.set(circle.pixels)
