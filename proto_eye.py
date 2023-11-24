@@ -48,9 +48,10 @@ while running:
             sclera = ug.Circle(8, 8, 6, rgb=(255, 192, 203))
             eyebrow = ug.Polygon([(0, 0), (0, 15), (eyerow_left, 15), (eyerow_right, 0)], filled=True, rgb=(255, 0, 0))
 
-            d.clear(no_update=True)
+            d.clear()
             d.set(sclera.pixels)
             d.draw_on_top(eyebrow.pixels)
+            d.update()
 
 # Quit pygame
 pygame.quit()

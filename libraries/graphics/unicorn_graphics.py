@@ -73,23 +73,25 @@ class Display():
         '''Updates the display to the Unicorn HAT HD'''
         self.uni_graphics.draw(self.pixels)
 
-    def clear(self, no_update=False):
+    def clear(self, update=False):
         '''Clears the pixels in the array'''
         for x in range(self.display_x):
             for y in range(self.display_y):
                 self.pixels[x][y] = Pixel()
         
-        if not no_update:
+        if update:
             self.update()
 
-    def set(self, pixels):
+    def set(self, pixels, update=False):
         '''Sets the pixels in the array
         
         pixels is a 2d array of Pixel objects'''
         self.pixels = pixels
-        self.update()
 
-    def draw_on_top(self, pixels):
+        if update:
+            self.update()
+
+    def draw_on_top(self, pixels, update=False):
         '''Draws the pixels on top of the existing pixels
         
         pixels is a 2d array of Pixel objects'''
@@ -98,9 +100,10 @@ class Display():
                 if pixel.is_set: # Only set the pixel if it is set
                     self.pixels[i][j].set(pixel.r, pixel.g, pixel.b)
 
-        self.update()
+        if update:
+            self.update()
 
-    def draw_on_bottom(self, pixels):
+    def draw_on_bottom(self, pixels, update=False):
         '''Draws the pixels on the bottom of the existing pixels
         
         pixels is a 2d array of Pixel objects'''
@@ -109,7 +112,8 @@ class Display():
                 if pixel.is_set and not self.pixels[i][j].is_set: # Only set the pixel if it is not already set
                     self.pixels[i][j].set(pixel.r, pixel.g, pixel.b)
 
-        self.update()
+        if update:
+            self.update()
 
     
 class Circle():
