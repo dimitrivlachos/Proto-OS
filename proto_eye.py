@@ -45,8 +45,8 @@ while running:
             eyerow_left = map_range(tilt, -1, 1, 0, 15 + vertical_delta)
             eyerow_right = map_range(tilt, -1, 1, 15 + vertical_delta, 0)
 
-            sclera = ug.Circle(8, 8, 6, rgb=(255, 192, 203))
-            eyebrow = ug.Polygon([(0, 0), (0, 15), (eyerow_left, 15), (eyerow_right, 0)], filled=True, rgb=(255, 0, 0))
+            sclera = ug.Circle(7, 7, 7, rgb=(255, 192, 203))
+            eyebrow = ug.Polygon([(0, 0), (0, 15), (eyerow_left, 15), (eyerow_right, 0)], filled=True, rgb=(0, 0, 0))
 
             d.clear()
             d.set(sclera.pixels)
