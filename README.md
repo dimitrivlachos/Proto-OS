@@ -1,5 +1,18 @@
 # Proto-OS
 
+> [!WARNING]
+> **This repository has been moved!**
+>
+> Development of Proto-OS has moved to a different account that I keep separate from my professional work. This copy is left up for historical reference only - issues and PRs here will not be reviewed, and the code will not be updated.
+>
+> **If you'd like the link to the active repository, or want to get in touch about the project, please reach out:**\
+> _dimitri.j.vlachos@gmail.com_\
+> (Otherwise, you can reach out to me on socials on my GitHub profile or LinkedIn).
+>
+> I'm happy to share the new location 1:1; I'd just rather not publish it here.
+
+---
+
 ### **This project is a work in progress and is not yet ready for use.**
 
 ## What is Proto-OS?
